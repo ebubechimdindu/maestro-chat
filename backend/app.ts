@@ -23,11 +23,10 @@ app.use("/api/user",userRouter)
 
 
 if(process.env.NODE_ENV === "production"){
-  const webPath = '../../web/dist'
-  app.use(express.static(path.join(__dirname,webPath)))
+  app.use(express.static(path.join(__dirname,'../web/dist')))
 
   app.get("/{*any}",(req: Request, res: Response, next: NextFunction) => {
-    res.sendFile(path.join(__dirname,webPath))
+    res.sendFile(path.join(__dirname,'../web/dist/index.html'))
   })
 }
 
