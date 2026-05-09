@@ -1,3 +1,4 @@
+//Extends the built-in NodeJS namespace that TypeScript already knows about.
 declare namespace NodeJS {
   interface ProcessEnv {
     PORT?: number;
@@ -7,10 +8,5 @@ declare namespace NodeJS {
     JWT_EXPIRES_IN?: number;
     JWT_REFRESH_EXPIRES_IN?: number;
     CLIENT_URL?: string;
-    TWILIO_ACCOUNT_SID: string;
-    TWILIO_SERVICE_SID: string
-    TWILIO_AUTH_TOKEN: string;
-    NYLAS_API_KEY: string
-    USER_GRANT_ID: string
   }
 }
