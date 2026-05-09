@@ -4,4 +4,3 @@ import type { Socket } from "socket.io";
 //store online usrs in memory
 export const onlineUsers = new Map<string,Socket>();
 
-export const metaBySocket = new WeakMap<Socket, { userId: string }>();

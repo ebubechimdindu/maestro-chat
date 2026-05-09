@@ -9,7 +9,7 @@ import { authCallbackService } from "../services/auth.service";
 export const authCallback = asyncErrorHandler(async (req: BodyRequest<{}>, res: Response) => {
     const { userId: clerkId } = getAuth(req)
 
-    const user = authCallbackService(clerkId)
+    const user = await authCallbackService(clerkId)
 
     res.status(201).json({
         success: true,

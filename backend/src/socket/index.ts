@@ -3,7 +3,7 @@ import { Socket, Server as SocketServer } from 'socket.io';
 import CustomError from "../utils/CustomError";
 import { verifyToken } from "@clerk/express";
 import { User } from "../Models/User.model";
-import { metaBySocket, onlineUsers } from "./store";
+import { onlineUsers } from "./store";
 import { Chat } from "../Models/Chat.model";
 import { Message } from "../Models/Message.model";
 
