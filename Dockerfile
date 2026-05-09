@@ -22,9 +22,9 @@ RUN bun install --frozen-lockfile
 COPY backend/ ./
 
 # expose port
-EXPOSE 3000
+EXPOSE 8000
 # set non-sensitive defaults 
-ENV PORT=3000
+ENV PORT=8000
 ENV NODE_ENV=production
 
 # start the application
