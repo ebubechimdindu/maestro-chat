@@ -19,8 +19,9 @@ export const protect = asyncErrorHandler(async (req: Request, res: Response, nex
         throw new CustomError("The user for this token no longer exists", 401);
     }
 
+    console.log(user.id,userId,"auth.middleware.js")
     req.user = {
-        userId:"",
+        userId,
         clerkId: user.id,
         email:user.primaryEmailAddress?.emailAddress!,
         phoneNumber:user.primaryPhoneNumber?.phoneNumber
