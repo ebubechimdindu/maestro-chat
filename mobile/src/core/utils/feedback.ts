@@ -8,6 +8,7 @@ import {
 type ExtendedToastType =
   | ToastType
   | "toast"
+  | "banner"
 
 
 type FeedbackShowParams = Omit<ToastShowParams, "type"> & {
@@ -31,5 +32,19 @@ export const Feedback = {
       position: "center",
       visibilityTime: 3000,
     });
+  },
+  // persistent top banner (e.g. "Connecting...", "No internet connection")
+  // stays up until hideBanner() is called - doesn't auto-dismiss
+  banner: (options: Omit<FeedbackShowParams, "type">) => {
+    Toast.show({
+      ...options,
+      type: "banner" as ToastType,
+      position: "top",
+      autoHide: false,
+      useModal: false,
+    });
+  },
+  hideBanner: () => {
+    Toast.hide();
   },
 };

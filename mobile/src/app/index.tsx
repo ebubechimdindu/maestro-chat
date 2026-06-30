@@ -1,29 +1,20 @@
-import { useAuth, useClerk, useUser, useUserProfileModal } from "@clerk/expo";
+import { useAuth } from "@/core/Providers/AuthProvider";
+import { useAuth as useClerkAuth, useClerk, useUser, useUserProfileModal } from "@clerk/expo";
 import { Redirect } from "expo-router";
 import { Text, View, StyleSheet, ActivityIndicator } from "react-native";
 
 export default function Index() {
-  const { isSignedIn, isLoaded } = useAuth({ treatPendingAsSignedOut: false })
-  const { presentUserProfile } = useUserProfileModal()
+  const {isAuthenticated,isLoading,getInitialRoute} = useAuth()
 
-  console.log(isSignedIn,"isSignedIn")
-
-
-  if (!isLoaded) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" />
-      </View>
-    )
-  }
+  if (isLoading) return
 
   
-  if (!isSignedIn) {
+  if (!isAuthenticated) {
     return <Redirect href={'/(auth)'}/>
   }
 
   return (
-      <Redirect href={'/(tabs)'}/>
+      <Redirect href={'/(auth)'}/>
   );
 }
 

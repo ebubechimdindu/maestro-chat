@@ -1,13 +1,15 @@
 // AuthContext.tsx
 import { authTokenService } from '@/services/auth/authTokenService';
-import { appFirstRunService, authFlowService, clearAllAppData, guestModeService, onboardingFlowStatusService } from '@/services/storage/appStorage';
+import { appFirstRunService, clearAllAppData } from '@/services/storage/appStorage';
 import React, { createContext, FC, PropsWithChildren, useContext, useEffect, useState } from 'react';
 import { appLogger } from '../utils/loggers';
 import { Route } from 'expo-router';
+import { useAuth as useClerkAuth } from '@clerk/expo'
+
 
 interface TokenType {
-  accessToken: string;
-  refreshToken: string;
+  accessToken: string | null;
+  refreshToken: string | null;
 }
 
 interface AuthContextType {
@@ -15,7 +17,6 @@ interface AuthContextType {
   isLoading: boolean;
   login: ({ accessToken, refreshToken }: TokenType) => void;
   logout: () => void;
-  startGuestMode: () => void;
   getInitialRoute: () => Route;
 }
 
@@ -23,16 +24,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const { isSignedIn, isLoaded,getToken } = useClerkAuth({ treatPendingAsSignedOut: false })
+  const [isLoading, setIsLoading] = useState(isLoaded);
+  
 
   const getInitialRoute = (): Route => {
-    const onboardingComplete = onboardingFlowStatusService.getStatus();
-    const authComplete = authFlowService.isComplete();
- 
+    if (isAuthenticated) return '/(tabs)';
 
-    if (isAuthenticated) return '/(protected)/(tabs)';
-   
-    return '/onboarding';
+    return '/(auth)';
   };
 
   useEffect(() => {
@@ -47,19 +46,15 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
         }
 
         const expired = await authTokenService.isRefreshTokenExpired();
-        const guestActive = guestModeService.isActive(); 
 
-        appLogger(`refresh token expired: ${expired}, guest active: ${guestActive}`, { fileName: 'AuthProvider' });
+        appLogger(`refresh token expired: ${expired}`, { fileName: 'AuthProvider' });
 
         if (!expired) {
           setIsAuthenticated(true);
-        
-        } else if (guestActive) {
-     
+        }
+        else {
           setIsAuthenticated(false);
-        } else {
-          setIsAuthenticated(false);
-        
+
         }
       } catch (error) {
         console.error('Error initializing auth:', error);
@@ -73,27 +68,20 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
 
 
 
-  const startGuestMode = () => {
-    guestModeService.setActive();
-    setIsAuthenticated(false);
-  };
+
 
   const login = async ({ accessToken, refreshToken }: TokenType) => {
     setIsAuthenticated(true);
-  
-    guestModeService.remove();
     await authTokenService.setToken({ accessToken, refreshToken });
   };
 
   const logout = async () => {
     await authTokenService.deleteToken();
-    guestModeService.remove();
-  
     setIsAuthenticated(false);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isLoading, login, logout, startGuestMode, getInitialRoute }}>
+    <AuthContext.Provider value={{ isAuthenticated, isLoading, login, logout, getInitialRoute }}>
       {children}
     </AuthContext.Provider>
   );

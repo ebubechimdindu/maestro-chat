@@ -6,6 +6,8 @@ import { Slot } from "expo-router";
 import React from "react";
 import { ClerkProvider } from '@clerk/expo'
 import { tokenCache } from '@clerk/expo/token-cache'
+import ToastProvider from 'toastify-react-native'
+import { toastConfig } from '@/core/config/toast.config'
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
 
@@ -28,13 +30,13 @@ export default function RootLayout() {
   return (
     <ReactQueryProvider>
       <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-          
-            <ThemeProvider value={theme}>
-              <Slot/>
-            </ThemeProvider>
-            {/* <ToastManager config={toastConfig} /> */}
-        
-        </ClerkProvider>
+        <AuthProvider>
+          <ThemeProvider value={theme}>
+            <Slot />
+          </ThemeProvider>
+          <ToastProvider config={toastConfig} />
+        </AuthProvider>
+      </ClerkProvider>
     </ReactQueryProvider>
   )
 }

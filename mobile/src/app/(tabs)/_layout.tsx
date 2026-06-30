@@ -1,6 +1,8 @@
+import { useAuth } from '@clerk/expo';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
 export default function TabLayout() {
+  
     return (
         <NativeTabs>
             <NativeTabs.Trigger name="index">

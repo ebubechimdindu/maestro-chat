@@ -3,5 +3,5 @@ import type { AuthCallbackResponse } from './types';
 
 export const authApi = {
   authCallback: () =>
-    apiClient<AuthCallbackResponse>({ method: 'POST', url: '/api/auth' }),
+    apiClient<AuthCallbackResponse>({ method: 'POST', url: '/api/auth/callback' }),
 };
