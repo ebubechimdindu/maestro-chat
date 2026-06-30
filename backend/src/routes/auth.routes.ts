@@ -3,7 +3,7 @@ import { authCallback } from '../controllers/auth.controller';
 
 const authRouter = express.Router()
 
-authRouter.post("/auth", authCallback)
+authRouter.post("/callback", authCallback)
 
 
 export default authRouter;

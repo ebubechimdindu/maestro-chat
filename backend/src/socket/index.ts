@@ -4,8 +4,7 @@ import CustomError from "../utils/CustomError";
 import { verifyToken } from "@clerk/express";
 import { User } from "../Models/User.model";
 import { onlineUsers } from "./store";
-import { Chat } from "../Models/Chat.model";
-import { Message } from "../Models/Message.model";
+import { createMessage } from "../services/message.service";
 
 export interface CustomSocket extends Socket {
     data: {
@@ -78,30 +77,11 @@ export const initializeSocket = (httpServer: HttpServer) => {
             socket.leave(`chat:${chatId}`);
         })
 
-        socket.on("send-meesage", async (data: { chatId: string, text: string }) => {
+        socket.on("send-message", async (data: { chatId: string, text: string }) => {
             try {
                 const { chatId, text } = data
-                const chat = await Chat.findOne({
-                    _id: chatId,
-                    participants: userId
-                })
 
-                if (!chat) {
-                    socket.emit("socket-error", { message: "Chat not found" })
-                    return
-                }
-
-                const message = await Message.create({
-                    chat: chatId,
-                    sender: userId,
-                    text
-                })
-
-                chat.lastMessage = message._id
-                chat.lastMessageAt = new Date();
-                await chat.save()
-
-                await message.populate("sender", "name email avatar")
+                const { message, chat } = await createMessage({ userId, chatId, text })
 
                 // emit to chat room (for users inside the chat)
                 io.to(`chat:${chatId}`).emit("new-message", message);
@@ -111,11 +91,8 @@ export const initializeSocket = (httpServer: HttpServer) => {
                     io.to(`user:${participantId}`).emit("new-message", message);
                 }
 
-
-                // 
-
-            } catch (error) {
-
+            } catch (error: any) {
+                socket.emit("socket-error", { message: error.message ?? "Something went wrong" });
             }
         })
 
